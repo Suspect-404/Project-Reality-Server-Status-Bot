@@ -76,5 +76,5 @@ Save the file, return to the "Console" tab, and click "Start". The bot will laun
 ---
 
 ## Screenshots
-![Photo1](https://postimg.cc/JD2X30JR)
+(https://ibb.co/LXScCdyX)
 
