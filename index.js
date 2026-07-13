@@ -2,16 +2,8 @@ const { Client, GatewayIntentBits, EmbedBuilder, Events } = require("discord.js"
 const { GameDig } = require("gamedig");
 const https = require('https');
 
-const TOKEN = "Put your bot token here";
-const CHANNEL_ID = "Put CHANNEL_ID this where the bot supposed to Show the Panel";
-
-const friendsList = [
-    "Ezzeldin", "KoMaTsY", "Moh009", "AHMAD_EG", "PLSt", // Example
-    "brhom2223", "3NDLEB", "sa3soo3", "osamabinkaboom", "mylifebelike6", "3abas_",
-    "=IED=1HPguy", "omar3215j", "ZAROVESKY", "jason65", "osama21", "eisa112", "nyslientsoul", "BaraaElAntel", "sgt.GLiiiTCHE", "eisa125", "AhmedNasr",
-    "VORTEX-VIPER", "Qotibah208tti", "BaraaElAntil", "ZAKOexp", "almasry", "Youssef117", "A7MAD_EG",
-    "FARESEL3ASB", "the_xyz", "Zomblex", "Mujahid_Express", "tarnished_0n3", "Star-Boy", "M_O"         // Put your friend here
-];
+// استدعاء ملف الإعدادات
+const config = require('./config.json');
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] });
 let botMessage = null;
@@ -32,7 +24,8 @@ function getFullServerData() {
             res.on('end', () => {
                 try {
                     const parsed = JSON.parse(data);
-                    const srv = parsed.servers.find(s => (s.properties?.hostname || "").includes("[ENG] Alliance EU"));
+                    // بيقرأ اسم السيرفر من ملف الكونفج
+                    const srv = parsed.servers.find(s => (s.properties?.hostname || "").includes(config.server.apiName));
                     resolve(srv || null);
                 } catch (e) { resolve(null); }
             });
@@ -42,8 +35,12 @@ function getFullServerData() {
 
 async function updateDashboard() {
     try {
+        // بيقرأ الأي بي والبورت من ملف الكونفج
         const state = await GameDig.query({
-            type: 'battlefield2', host: '149.202.89.241', port: 29900, maxRetries: 3,
+            type: 'battlefield2', 
+            host: config.server.ip, 
+            port: config.server.port, 
+            maxRetries: 3,
         });
 
         const now = Date.now();
@@ -59,7 +56,6 @@ async function updateDashboard() {
             lastMapName = state.map;
         }
 
-        // 1. حساب الوقت الحي (Live Mode)
         const startDelaySeconds = parseInt(state.raw?.bf2_startdelay) || 0;
         const exactRoundStartTime = Math.floor(mapStartTime / 1000) + startDelaySeconds;
         const timeDisplay = `<t:${exactRoundStartTime}:R>`;
@@ -75,7 +71,8 @@ async function updateDashboard() {
         if (Array.isArray(state.players)) queryPlayers.push(...state.players);
         if (state.raw && Array.isArray(state.raw.players)) queryPlayers.push(...state.raw.players);
 
-        friendsList.forEach(friend => {
+        // بيقرأ قايمة الأصدقاء من ملف الكونفج
+        config.friendsList.forEach(friend => {
             const fClean = friend.toLowerCase().trim();
             const pQuery = queryPlayers.find(p => (p.name || p.player || p.pname || "").toLowerCase().includes(fClean));
             const pAPI = apiPlayers.find(p => (p.name || "").toLowerCase().includes(fClean));
@@ -94,12 +91,11 @@ async function updateDashboard() {
                 else if (teamNum === 2) teamTag = `[${team2Name}]`;
                 else teamTag = `[Loading/Spec]`;
 
-                // 2. فصل الاسم والفريق، وإزالة كلمة Idle
                 if (scoreAPI !== 0 || scoreQuery !== 0 || kills > 0 || deaths > 0) {
                     const displayString = `${finalName} - ${teamTag}`;
                     activeFriends.add(displayString);
                 } else {
-                    const displayString = `${finalName} - ${teamTag}`; // تم إزالة "- Idle" من هنا
+                    const displayString = `${finalName} - ${teamTag}`; 
                     afkFriends.add(displayString);
                 }
             }
@@ -116,7 +112,6 @@ async function updateDashboard() {
             friendsFormatted += `💤 **AFK / LOADING:**\n\`\`\`md\n${afkArr.map(f => `• ${f}`).join("\n")}\`\`\``;
         }
 
-        // 3. رسالة لو مفيش حد من صحابك بيلعب
         if (activeArr.length === 0 && afkArr.length === 0) {
             friendsFormatted = "```\nNo friends online\n```";
         }
@@ -137,7 +132,6 @@ async function updateDashboard() {
         const mapClean = state.map.toLowerCase().replace(/ /g, "");
         const mapLayerUrl = `https://mapgallery.realitymod.org/images/maps/${mapClean}/mapoverview_${rawMode}_${mapSize}.jpg?v=${mapStartTime}`;
 
-        // 4. قراءة أنواع الـ Layers الأربعة بشكل صحيح
         let layerDisplay = "Std";
         if (mapSize === "16") layerDisplay = "Inf";
         else if (mapSize === "32") layerDisplay = "Alt";
@@ -162,13 +156,16 @@ async function updateDashboard() {
             )
             .setThumbnail(`https://www.realitymod.com/images/maps/${mapClean}.jpg`)
             .setImage(mapLayerUrl)
-            .setFooter({ text: `Developed by Ezzeldin • Updated: ${new Date().toLocaleTimeString('en-US')}` })
+            // بيقرأ الفوتر من ملف الكونفج
+            .setFooter({ text: `${config.botSettings.footerText} • Updated: ${new Date().toLocaleTimeString('en-US')}` })
             .setTimestamp();
 
-        const channel = await client.channels.fetch(CHANNEL_ID);
+        // بيقرأ أيدي الروم من ملف الكونفج
+        const channel = await client.channels.fetch(config.discord.channelId);
         if (!botMessage) {
             const msgs = await channel.messages.fetch({ limit: 10 });
-            botMessage = msgs.find(m => m.author.id === client.user.id);
+            // زودت حماية هنا عشان البوت ميعملش إيرور لو لقى رسالة سيستم
+            botMessage = msgs.find(m => m.author.id === client.user.id && !m.system && m.editable);
         }
 
         if (botMessage) await botMessage.edit({ embeds: [embed] });
@@ -183,8 +180,9 @@ client.once(Events.ClientReady, () => {
     console.log(`✅ Dashboard is up!`);
     updateDashboard();
 
-    // 5. تحديث كل 15 ثانية لدقة أسرع
-    setInterval(updateDashboard, 15000);
+    // بيقرأ وقت التحديث من ملف الكونفج
+    setInterval(updateDashboard, config.botSettings.updateInterval);
 });
 
-client.login("Put your bot token here"); 
+// بيقرأ التوكن من ملف الكونفج
+client.login(config.discord.token);
