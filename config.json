@@ -4,17 +4,20 @@
         "channelId": "YOUR_CHANNEL_ID_HERE"
     },
     "server": {
-        "ip": "149.202.89.241", 
-        "port": 29900, 
+        "ip": "149.202.89.241",
+        "port": 29900,
         "apiName": "[ENG] Alliance EU"
     },
     "botSettings": {
         "updateInterval": 15000,
-        "footerText": "Powered by Your Name / Community"
+        "footerText": "Powered by Your Community"
     },
+    "adminsList": [
+        "Admin1",
+        "Admin2"
+    ],
     "friendsList": [
         "Player1",
-        "Player2",
-        "Player3"
+        "Player2"
     ]
 }
