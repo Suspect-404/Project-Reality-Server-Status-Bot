@@ -75,6 +75,6 @@ Save the file, return to the "Console" tab, and click "Start". The bot will laun
 ---
 
 ## Screenshots
-![Dashboard Screenshot](https://i.postimg.cc/6q9hXGp4/prar-spy-PRAR-Project-Reality-Arabic-Community-Discord-5-15-2026-4-59-40-PM.png)
+![Dashboard Screenshot]([https://i.postimg.cc/6q9hXGp4/prar-spy-PRAR-Project-Reality-Arabic-Community-Discord-5-15-2026-4-59-40-PM.png](https://i.postimg.cc/hvcN5rzy/𝒑𝒓𝒂𝒓-𝒔𝒑𝒚-PRAR-Project-Reality-Arabic-Community-Discord-5-15-2026-4-59-40-PM.png))
 ![Dashboard Screenshot](https://i.postimg.cc/xdmrkByd/𝒑𝒓𝒂𝒓-𝒔𝒑𝒚-PRAR-Project-Reality-Arabic-Community-Discord-5-15-2026-5-05-27-PM.png)
 
