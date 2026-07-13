@@ -10,7 +10,7 @@
     },
     "botSettings": {
         "updateInterval": 15000,
-        "footerText": "Powered by Your Community"
+        "footerText": "Powered/Developed by Your Name/Community"
     },
     "adminsList": [
         "Admin1",
