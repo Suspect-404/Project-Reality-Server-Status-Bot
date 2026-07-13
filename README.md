@@ -42,7 +42,7 @@ Finding the Server IP:
 1. Join your target server in-game.
 2. Open Windows Task Manager -> go to the "Performance" tab -> click "Open Resource Monitor".
 3. Navigate to the "Network" tab and look for the PRBF2.exe process under Network Activity to see active IP connections.
-4. If multiple IP addresses appear, open your terminal/command prompt and test an IP using GameDig CLI:
+4. If multiple IP addresses appear, open your terminal/command prompt (ensure Node.js is installed on your PC) and test an IP using GameDig CLI:
    `npx gamedig --type battlefield2 <IP>`
 5. Check the output returned in terminal to confirm it matches your server's name.
 
