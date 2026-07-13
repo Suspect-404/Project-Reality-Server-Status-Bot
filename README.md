@@ -1,40 +1,38 @@
 # Project Reality Discord Dashboard Bot
 
 ## About
-A fully automated, live-updating Discord bot designed for Project Reality: BF2 communities. It fetches real-time server data and maintains a continuous dashboard in a specific Discord channel. It seamlessly tracks server status, current map, elapsed time, factions, and specific players' presence.
+A fully automated, live-updating Discord bot designed for Project Reality: BF2 communities. It fetches real-time server data and maintains a continuous dashboard in a specific Discord channel. It tracks server status, maps, and specific player lists (Admins/VIPs) with high precision by combining direct network pings with official PR API data.
 
-Developed by Ezzeldin.
+## How to Get Your Server IP and Port
+If you are the server owner or administrator, you can find your connection details:
+1.  **In-Game:** Open the server browser in PR:BF2. Right-click on your server and select "Copy IP/Port".
+2.  **Server Panel:** If you host your server (e.g., via a GSP), the IP and Port are always displayed in your server dashboard/control panel.
+3.  **Note:** The standard Port for Project Reality is `29900`. If you are unsure, ask your hosting provider for the "Query Port".
 
-## How It Works
-To ensure maximum accuracy and stability, this bot utilizes a dual-query system:
-1.  **Direct Server Query:** It uses the `gamedig` library to ping your PR server directly via the GameSpy4 protocol. This retrieves instantaneous data such as the current map, active player count, and raw match variables (like starting delay and gamemodes).
-2.  **Official PR API Integration:** It cross-references the raw data with the official Project Reality Server API (`servers.realitymod.com/api/ServerInfo`). This guarantees that player names, scores, kills, and team assignments are highly accurate and formatted correctly, bypassing the common glitches of basic server queries.
+## Step-by-Step Setup Guide
 
-## Features
--   **Live Updating Dashboard:** The bot continuously edits a single message to avoid spamming the channel.
--   **Accurate Time Tracking:** Displays the exact live round time by calculating server start delays.
--   **Player Tracking:** Separate lists to track when Admins and specific Friends/VIPs are online (Detects if they are Active or AFK/Loading).
--   **Map Visuals:** Automatically pulls the current map's layout and displays it in the embed.
--   **Next Map Detection:** Extracts the upcoming map directly from the server's sponsor text.
+### Phase 1: Creating Your Discord Bot
+1.  Go to the [Discord Developer Portal](https://discord.com/developers/applications).
+2.  Click "New Application" and give it a name.
+3.  On the left sidebar, click "Bot".
+4.  Under "Privileged Gateway Intents", enable **Server Members Intent** and **Message Content Intent**.
+5.  Scroll down and click "Reset Token" to get your bot's token. Copy and save it.
+6.  Go to the "OAuth2" tab -> "URL Generator". Select `bot` and `View Channels`, `Send Messages`, `Manage Messages` (needed to edit the dashboard).
+7.  Copy the generated URL, paste it into your browser, and invite the bot to your server.
 
-## Configuration Guide
-All bot settings are managed through the `config.json` file. You do not need to edit the main code.
+### Phase 2: Configuration
+Open the `config.json` file provided in the repository and update the following:
+*   `token`: Paste the bot token you saved from Phase 1.
+*   `channelId`: In Discord, enable "Developer Mode" (Settings -> Advanced), right-click your desired channel, and select "Copy Channel ID".
+*   `server.ip` & `server.port`: Enter your server's IP and Query Port.
+*   `server.apiName`: Ensure this matches the server name exactly as it appears in the official PR launcher list; otherwise, player stats will not load.
+*   `adminsList` / `friendsList`: Add the exact in-game names to track. If you don't need these lists, leave them empty as `[]`.
 
-*   `discord.token`: Your Discord bot token from the Discord Developer Portal.
-*   `discord.channelId`: The ID of the Discord channel where the bot will post and update the dashboard.
-*   `server.ip`: Your PR server IP address.
-*   `server.port`: Your PR server Port (the default PR port is 29900).
-*   `server.apiName`: The exact name of your server as it appears on the official PR server list (Crucial for fetching accurate player stats).
-*   `botSettings.updateInterval`: How often the bot refreshes the data in milliseconds (15000 = 15 seconds).
-*   `botSettings.footerText`: Custom text to display at the bottom of the dashboard.
-*   `adminsList`: Add in-game names here to track server administrators. Leave empty `[]` if not needed.
-*   `friendsList`: Add in-game names here to track VIPs or friends. Leave empty `[]` if not needed.
-
-## Setup & Hosting (Bot-Hosting.net)
-You can easily host this bot for free 24/7 using Bot-Hosting.net.
-
-1.  **Prepare your files:** Ensure you have your `index.js`, `config.json`, and `package.json` ready.
-2.  **Create a Server:** Log in to Bot-Hosting.net, go to your dashboard, and create a new NodeJS server.
-3.  **Upload Files:** Go to the "Files" section of your new server panel and upload the bot files.
-4.  **Install Packages:** Go to the "Console" tab and type: `npm install discord.js gamedig`
-5.  **Start the Bot:** Once the installation is complete, click the "Start" button on the panel. The bot will go online and generate the dashboard in your specified channel.
+### Phase 3: Hosting on Bot-Hosting.net
+1.  Create an account on [Bot-Hosting.net](https://bot-hosting.net/).
+2.  Go to your Dashboard and click "Create Server". Select the **NodeJS** option.
+3.  Open your new server's "File Manager".
+4.  Upload your `index.js`, `config.json`, and `package.json` files.
+5.  Go to the "Console" tab and run the following command to install the required tools:
+    `npm install discord.js gamedig`
+6.  Click the "Start" button. If the console shows "Dashboard is up!", your bot is successfully running.
