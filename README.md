@@ -5,6 +5,11 @@ A fully automated, live-updating Discord bot designed for Project Reality: BF2 c
 
 Developed by Ezzeldin.
 
+## How It Works
+To ensure maximum accuracy and stability, this bot utilizes a dual-query system:
+1. Direct Server Query: It uses the gamedig library to ping your PR server directly via the GameSpy4 protocol. This retrieves instantaneous data such as the current map, active player count, and raw match variables.
+2. Official PR API Integration: It cross-references the raw data with the official Project Reality Server API. This guarantees that player names, scores, kills, and team assignments are highly accurate and formatted correctly.
+
 ## Features
 - Live Updating Dashboard: The bot continuously edits a single message to avoid spamming the channel.
 - Time Tracking: Displays the live round time by calculating server start delays. (Note: Due to server synchronization, the displayed time usually has an approximate 2-minute delay).
@@ -13,11 +18,6 @@ Developed by Ezzeldin.
 - Map Visuals: Automatically pulls the current map's layout and displays it in the embed.
 - Next Map Detection: Extracts the upcoming map directly from the server's sponsor text.
 - Easy Configuration: No coding required. Everything is controlled via a simple configuration file.
-
-## How It Works
-To ensure maximum accuracy and stability, this bot utilizes a dual-query system:
-1. Direct Server Query: It uses the gamedig library to ping your PR server directly via the GameSpy4 protocol. This retrieves instantaneous data such as the current map, active player count, and raw match variables.
-2. Official PR API Integration: It cross-references the raw data with the official Project Reality Server API. This guarantees that player names, scores, kills, and team assignments are highly accurate and formatted correctly.
 
 ## Setup Guide
 
@@ -33,33 +33,38 @@ To ensure maximum accuracy and stability, this bot utilizes a dual-query system:
 ### Phase 2: Finding Your Server IP and API Name
 To make the bot work perfectly, you need the exact Server IP and the official API Name.
 
-Finding the IP (Network Method):
+Finding the Server IP:
 1. Join your target server in-game.
 2. Open Windows Task Manager -> go to the "Performance" tab -> click "Open Resource Monitor".
-3. Navigate to the "Network" tab and look for the PRBF2.exe process.
-4. Check the "Network Activity" section for the exact IP address the game is connected to. Copy this IP.
+3. Navigate to the "Network" tab and look for the PRBF2.exe process under Network Activity to see active IP connections.
+4. If multiple IP addresses appear, open your terminal/command prompt and test an IP using GameDig CLI:
+   `npx gamedig --type battlefield2 <IP>`
+5. Check the output returned in terminal to confirm it matches your server's name.
 
 Finding the API Name:
 1. Open this link in your browser: https://servers.realitymod.com/api/ServerInfo
 2. Press Ctrl + F and search for your server's name.
 3. Find the exact "hostname" value. Copy it exactly as written.
 
-### Phase 3: Hosting on Bot-Hosting.net
-You can easily host this bot for free 24/7 using Bot-Hosting.net.
+### Phase 3: Free Hosting on Bot-Hosting.net
+You can host this bot 100% free using Bot-Hosting.net:
 1. Create an account on https://bot-hosting.net.
-2. Go to your Dashboard and click "Create Server". Select the NodeJS option.
-3. Open your new server's panel and go to the "File Manager" tab.
-4. Upload your index.js, config.json, and package.json files.
-5. Go to the "Console" tab and run the following command to install dependencies: 
-   npm install discord.js gamedig
+2. Go to the "Earn Coins" section on the left sidebar to claim your free daily coins (you get 10 free coins every day).
+3. Click "Create Server" and select the **Starter** plan (256 MB RAM / 20% CPU / 10 coins per week).
+4. Select NodeJS as your server environment and create the server.
+5. Go to your new server panel, click on the "File Manager" tab, and upload your `index.js`, `config.json`, and `package.json` files.
+6. Go to the "Console" tab and run the following command to install dependencies: 
+   `npm install discord.js gamedig`
 
 ### Phase 4: Configuration & Startup
-Now that your files are on the host, go back to the "File Manager" in Bot-Hosting and open the config.json file to update your details:
+Now open `config.json` directly inside the File Manager on Bot-Hosting.net and update your details:
 
 * discord.token: Paste the bot token you saved from Phase 1.
 * discord.channelId: In Discord, enable "Developer Mode" (Settings -> Advanced), right-click your desired channel, and select "Copy Channel ID". Paste it here.
 * server.ip & server.port: Enter your server's IP (from Phase 2) and Port (default PR port is 29900).
 * server.apiName: Ensure this matches the server name exactly as it appears in the official API (from Phase 2).
 * adminsList / friendsList: Add the exact in-game names to track. If you do not want to use these features, leave the brackets empty: []
+
+Save the file, return to the "Console" tab, and click "Start". The bot will launch and start managing your live PR dashboard.
 
 Once configured, save the file, go back to the "Console" tab, and click the "Start" button. If the console shows "Dashboard is up!", your bot is successfully running!
