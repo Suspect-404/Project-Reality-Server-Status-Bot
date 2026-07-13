@@ -12,7 +12,7 @@ To ensure maximum accuracy and stability, this bot utilizes a dual-query system:
 
 ## Features
 - Live Updating Dashboard: The bot continuously edits a single message to avoid spamming the channel.
-- Player Count & Factions: Displays the total number of active players and the current battling factions.
+- Player Count & Factions: Displays the total number of the players and the current battling factions.
 - Time Tracking: Displays the live round time by calculating server start delays. (Note: Due to server synchronization, the displayed time usually has an approximate 2-minute delay).
 - Player Tracking: Separate lists to track when Admins and specific Friends/VIPs are online in the server, explicitly displaying which team they are currently playing on. 
 - AFK/Loading Detection: The bot intelligently detects if a tracked player is active or stuck in loading/AFK by checking if their in-game score, kills, and deaths remain at zero.
