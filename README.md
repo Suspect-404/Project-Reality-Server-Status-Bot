@@ -1,9 +1,8 @@
-# project-reality-server-status-bot
+# Project-Reality-Server-Status-Bot
 
 ## About
 A fully automated, live-updating Discord bot designed for Project Reality: BF2 communities. It fetches real-time server data and maintains a continuous dashboard in a specific Discord channel. It tracks server status, maps, and specific player lists (Admins/VIPs) with high precision by combining direct network pings with official PR API data.
 
-Developed by Ezzeldin.
 
 ## How It Works
 To ensure maximum accuracy and stability, this bot utilizes a dual-query system:
