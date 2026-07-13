@@ -1,7 +1,5 @@
 # Project-Reality-Server-Status-Bot
 
-![Dashboard Preview](https://i.postimg.cc/6q9hXGp4/𝒑𝒓𝒂𝒓-𝒔𝒑𝒚-PRAR-Project-Reality-Arabic-Community-Discord-5-15-2026-4-59-40-PM.png)
-
 ## About
 A fully automated, live-updating Discord bot designed for Project Reality: BF2 communities. It fetches real-time server data and maintains a continuous dashboard in a specific Discord channel. It tracks server status, maps, and specific player lists (Admins/VIPs) with high precision by combining direct network pings with official PR API data.
 
@@ -74,3 +72,9 @@ Now open `config.json` directly inside the File Manager on Bot-Hosting.net and u
 * adminsList / friendsList: Add the exact in-game names to track. If you do not want to use these features, leave the brackets empty: []
 
 Save the file, return to the "Console" tab, and click "Start". The bot will launch and start managing your live PR dashboard.
+
+---
+
+## Screenshots
+*(https://postimg.cc/JD2X30JR)*
+*(https://postimg.cc/zLq26tQm)*
