@@ -1,0 +1,24 @@
+{
+    "discord": {
+        "token": "YOUR_BOT_TOKEN_HERE",
+        "channelId": "YOUR_CHANNEL_ID_HERE"
+    },
+    "server": {
+        "ip": "149.202.89.241",
+        "port": 29900,
+        "apiName": "[ENG] Alliance EU"
+    },
+    "botSettings": {
+        "updateInterval": 15000,
+        "footerText": "Devolped by Your name"
+    },
+    "friendsList": [
+        "Ezzeldin", "KoMaTsY", "Moh009", "AHMAD_EG", "PLSt",
+        "brhom2223", "3NDLEB", "sa3soo3", "osamabinkaboom", "mylifebelike6",
+        "3abas_", "=IED=1HPguy", "omar3215j", "ZAROVESKY", "jason65",
+        "osama21", "eisa112", "nyslientsoul", "BaraaElAntel", "sgt.GLiiiTCHE",
+        "eisa125", "AhmedNasr", "VORTEX-VIPER", "Qotibah208tti", "BaraaElAntil",
+        "ZAKOexp", "almasry", "Youssef117", "A7MAD_EG", "FARESEL3ASB",
+        "the_xyz", "Zomblex", "Mujahid_Express", "tarnished_0n3", "Star-Boy", "M_O"
+    ]
+}
