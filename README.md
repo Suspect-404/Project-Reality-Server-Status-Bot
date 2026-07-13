@@ -1,4 +1,4 @@
-# Project Reality Discord Dashboard Bot
+# project-reality-server-status-bot
 
 ## About
 A fully automated, live-updating Discord bot designed for Project Reality: BF2 communities. It fetches real-time server data and maintains a continuous dashboard in a specific Discord channel. It tracks server status, maps, and specific player lists (Admins/VIPs) with high precision by combining direct network pings with official PR API data.
@@ -12,12 +12,12 @@ To ensure maximum accuracy and stability, this bot utilizes a dual-query system:
 
 ## Features
 - Live Updating Dashboard: The bot continuously edits a single message to avoid spamming the channel.
+- Player Count & Factions: Displays the total number of active players and the current battling factions.
 - Time Tracking: Displays the live round time by calculating server start delays. (Note: Due to server synchronization, the displayed time usually has an approximate 2-minute delay).
-- Player Tracking: Separate lists to track when Admins and specific Friends/VIPs are online in the server. 
+- Player Tracking: Separate lists to track when Admins and specific Friends/VIPs are online in the server, explicitly displaying which team they are currently playing on. 
 - AFK/Loading Detection: The bot intelligently detects if a tracked player is active or stuck in loading/AFK by checking if their in-game score, kills, and deaths remain at zero.
 - Map Visuals: Automatically pulls the current map's layout and displays it in the embed.
 - Next Map Detection: Extracts the upcoming map directly from the server's sponsor text.
-- Easy Configuration: No coding required. Everything is controlled via a simple configuration file.
 
 ## Setup Guide
 
@@ -66,5 +66,3 @@ Now open `config.json` directly inside the File Manager on Bot-Hosting.net and u
 * adminsList / friendsList: Add the exact in-game names to track. If you do not want to use these features, leave the brackets empty: []
 
 Save the file, return to the "Console" tab, and click "Start". The bot will launch and start managing your live PR dashboard.
-
-Once configured, save the file, go back to the "Console" tab, and click the "Start" button. If the console shows "Dashboard is up!", your bot is successfully running!
