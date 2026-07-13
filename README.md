@@ -53,7 +53,7 @@ Finding the API Name:
 
 ### Phase 4: Free Hosting on Bot-Hosting.net
 You can host this bot 100% free using Bot-Hosting.net:
-1. Create an account on https://bot-hosting.net.
+1. Create an account on https://legacy.bot-hosting.net/.
 2. Go to the "Earn Coins" section on the left sidebar to claim your free daily coins (you get 10 free coins every day).
 3. Click "Create Server" and select the **Starter** plan (256 MB RAM / 20% CPU / 10 coins per week).
 4. Select NodeJS as your server environment and create the server.
