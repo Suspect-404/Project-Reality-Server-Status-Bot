@@ -3,6 +3,18 @@
 ## About
 A fully automated, live-updating Discord bot designed for Project Reality: BF2 communities. It fetches real-time server data and maintains a continuous dashboard in a specific Discord channel. It tracks server status, maps, and specific player lists (Admins/VIPs) with high precision by combining direct network pings with official PR API data.
 
+## How It Works
+To ensure maximum accuracy and stability, this bot utilizes a dual-query system:
+1.  **Direct Server Query:** It uses the `gamedig` library to ping your PR server directly via the GameSpy4 protocol. This retrieves instantaneous data such as the current map, active player count, and raw match variables (like starting delay and gamemodes).
+2.  **Official PR API Integration:** It cross-references the raw data with the official Project Reality Server API (`servers.realitymod.com/api/ServerInfo`). This guarantees that player names, scores, kills, and team assignments are highly accurate and formatted correctly, bypassing the common glitches of basic server queries.
+
+## Features
+-   **Live Updating Dashboard:** The bot continuously edits a single message to avoid spamming the channel.
+-   **Accurate Time Tracking:** Displays the exact live round time by calculating server start delays.
+-   **Player Tracking:** Separate lists to track when Admins and specific Friends/VIPs are online (Detects if they are Active or AFK/Loading).
+-   **Map Visuals:** Automatically pulls the current map's layout and displays it in the embed.
+-   **Next Map Detection:** Extracts the upcoming map directly from the server's sponsor text.
+
 ## How to Get Your Server IP and Port
 If you are the server owner or administrator, you can find your connection details:
 1.  **In-Game:** Open the server browser in PR:BF2. Right-click on your server and select "Copy IP/Port".
