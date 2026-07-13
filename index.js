@@ -23,7 +23,6 @@ function getFullServerData() {
             res.on('end', () => {
                 try {
                     const parsed = JSON.parse(data);
-                    
                     const srv = parsed.servers.find(s => (s.properties?.hostname || "").includes(config.server.apiName));
                     resolve(srv || null);
                 } catch (e) { resolve(null); }
@@ -34,7 +33,6 @@ function getFullServerData() {
 
 async function updateDashboard() {
     try {
-       
         const state = await GameDig.query({
             type: 'battlefield2', 
             host: config.server.ip, 
@@ -63,56 +61,63 @@ async function updateDashboard() {
         const team2Name = state.raw?.bf2_team2 || "Team 2";
         const factionsText = `${team1Name} vs ${team2Name}`;
 
-        let activeFriends = new Set();
-        let afkFriends = new Set();
-
         let queryPlayers = [];
         if (Array.isArray(state.players)) queryPlayers.push(...state.players);
         if (state.raw && Array.isArray(state.raw.players)) queryPlayers.push(...state.raw.players);
 
-        // بيقرأ قايمة الأصدقاء من ملف الكونفج
-        config.friendsList.forEach(friend => {
-            const fClean = friend.toLowerCase().trim();
-            const pQuery = queryPlayers.find(p => (p.name || p.player || p.pname || "").toLowerCase().includes(fClean));
-            const pAPI = apiPlayers.find(p => (p.name || "").toLowerCase().includes(fClean));
+        const processList = (list) => {
+            let active = new Set();
+            let afk = new Set();
+            list.forEach(person => {
+                const fClean = person.toLowerCase().trim();
+                const pQuery = queryPlayers.find(p => (p.name || p.player || p.pname || "").toLowerCase().includes(fClean));
+                const pAPI = apiPlayers.find(p => (p.name || "").toLowerCase().includes(fClean));
 
-            if (pQuery || pAPI) {
-                const finalName = (pQuery?.name || pQuery?.player || pQuery?.pname || pAPI?.name || friend).trim();
+                if (pQuery || pAPI) {
+                    const finalName = (pQuery?.name || pQuery?.player || pQuery?.pname || pAPI?.name || person).trim();
+                    const scoreAPI = parseInt(pAPI?.score) || 0;
+                    const scoreQuery = parseInt(pQuery?.score) || parseInt(pQuery?.frags) || (pQuery?.raw && pQuery?.raw?.score ? parseInt(pQuery?.raw?.score) : 0) || 0;
+                    const kills = parseInt(pAPI?.kills) || 0;
+                    const deaths = parseInt(pAPI?.deaths) || parseInt(pQuery?.deaths) || 0;
 
-                const scoreAPI = parseInt(pAPI?.score) || 0;
-                const scoreQuery = parseInt(pQuery?.score) || parseInt(pQuery?.frags) || (pQuery?.raw && pQuery?.raw?.score ? parseInt(pQuery?.raw?.score) : 0) || 0;
-                const kills = parseInt(pAPI?.kills) || 0;
-                const deaths = parseInt(pAPI?.deaths) || parseInt(pQuery?.deaths) || 0;
+                    const teamNum = parseInt(pAPI?.team) || parseInt(pQuery?.team) || (pQuery?.raw && pQuery?.raw?.team ? parseInt(pQuery?.raw?.team) : 0) || 0;
+                    let teamTag = "";
+                    if (teamNum === 1) teamTag = `[${team1Name}]`;
+                    else if (teamNum === 2) teamTag = `[${team2Name}]`;
+                    else teamTag = `[Loading/Spec]`;
 
-                const teamNum = parseInt(pAPI?.team) || parseInt(pQuery?.team) || (pQuery?.raw && pQuery?.raw?.team ? parseInt(pQuery?.raw?.team) : 0) || 0;
-                let teamTag = "";
-                if (teamNum === 1) teamTag = `[${team1Name}]`;
-                else if (teamNum === 2) teamTag = `[${team2Name}]`;
-                else teamTag = `[Loading/Spec]`;
-
-                if (scoreAPI !== 0 || scoreQuery !== 0 || kills > 0 || deaths > 0) {
                     const displayString = `${finalName} - ${teamTag}`;
-                    activeFriends.add(displayString);
-                } else {
-                    const displayString = `${finalName} - ${teamTag}`; 
-                    afkFriends.add(displayString);
+                    if (scoreAPI !== 0 || scoreQuery !== 0 || kills > 0 || deaths > 0) {
+                        active.add(displayString);
+                    } else {
+                        afk.add(displayString);
+                    }
                 }
-            }
-        });
+            });
+            return { active: Array.from(active), afk: Array.from(afk) };
+        };
 
-        let activeArr = Array.from(activeFriends);
-        let afkArr = Array.from(afkFriends);
+        const adminsData = processList(config.adminsList || []);
+        const friendsData = processList(config.friendsList || []);
 
-        let friendsFormatted = "";
-        if (activeArr.length > 0) {
-            friendsFormatted += `✅ **ACTIVE:**\n\`\`\`md\n${activeArr.map(f => `• ${f}`).join("\n")}\`\`\`\n`;
+        let trackerFormatted = "";
+
+        if (adminsData.active.length > 0 || adminsData.afk.length > 0) {
+            trackerFormatted += `🛡️ **ADMINS:**\n\`\`\`md\n`;
+            if (adminsData.active.length > 0) trackerFormatted += adminsData.active.map(a => `• ${a} (Active)`).join("\n") + "\n";
+            if (adminsData.afk.length > 0) trackerFormatted += adminsData.afk.map(a => `• ${a} (AFK/Loading)`).join("\n") + "\n";
+            trackerFormatted += `\`\`\`\n`;
         }
-        if (afkArr.length > 0) {
-            friendsFormatted += `💤 **AFK / LOADING:**\n\`\`\`md\n${afkArr.map(f => `• ${f}`).join("\n")}\`\`\``;
+
+        if (friendsData.active.length > 0 || friendsData.afk.length > 0) {
+            trackerFormatted += `⭐ **FRIENDS & VIPs:**\n\`\`\`md\n`;
+            if (friendsData.active.length > 0) trackerFormatted += friendsData.active.map(f => `• ${f} (Active)`).join("\n") + "\n";
+            if (friendsData.afk.length > 0) trackerFormatted += friendsData.afk.map(f => `• ${f} (AFK/Loading)`).join("\n") + "\n";
+            trackerFormatted += `\`\`\`\n`;
         }
 
-        if (activeArr.length === 0 && afkArr.length === 0) {
-            friendsFormatted = "```\nNo friends online\n```";
+        if (trackerFormatted === "") {
+            trackerFormatted = "```\nNo Admins or Friends online\n```";
         }
 
         let nextMap = "Unknown";
@@ -147,23 +152,18 @@ async function updateDashboard() {
                 { name: "🗺️ CURRENT MAP", value: `**${state.map}**`, inline: true },
                 { name: "🎮 MODE", value: `**${modeDisplay}**`, inline: true },
                 { name: "💠 LAYER", value: `**${layerDisplay}**`, inline: true },
-
                 { name: "⚔️ FACTIONS", value: `**${factionsText}**`, inline: true },
                 { name: "⏭️ NEXT MAP", value: `**${nextMap}**`, inline: true },
-
-                { name: "⭐ FRIENDS STATUS IN SERVER", value: friendsFormatted, inline: false }
+                { name: "🔍 TRACKED PLAYERS", value: trackerFormatted, inline: false }
             )
             .setThumbnail(`https://www.realitymod.com/images/maps/${mapClean}.jpg`)
             .setImage(mapLayerUrl)
-            
             .setFooter({ text: `${config.botSettings.footerText} • Updated: ${new Date().toLocaleTimeString('en-US')}` })
             .setTimestamp();
 
-        
         const channel = await client.channels.fetch(config.discord.channelId);
         if (!botMessage) {
             const msgs = await channel.messages.fetch({ limit: 10 });
-            
             botMessage = msgs.find(m => m.author.id === client.user.id && !m.system && m.editable);
         }
 
@@ -176,11 +176,12 @@ async function updateDashboard() {
 }
 
 client.once(Events.ClientReady, () => {
-    console.log(`✅ Dashboard is up!`);
+    console.log(`Dashboard is up!`);
     updateDashboard();
-
-    
     setInterval(updateDashboard, config.botSettings.updateInterval);
+});
+
+client.login(config.discord.token);
 });
 
 
