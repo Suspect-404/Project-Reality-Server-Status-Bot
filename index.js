@@ -2,7 +2,6 @@ const { Client, GatewayIntentBits, EmbedBuilder, Events } = require("discord.js"
 const { GameDig } = require("gamedig");
 const https = require('https');
 
-// استدعاء ملف الإعدادات
 const config = require('./config.json');
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] });
@@ -24,7 +23,7 @@ function getFullServerData() {
             res.on('end', () => {
                 try {
                     const parsed = JSON.parse(data);
-                    // بيقرأ اسم السيرفر من ملف الكونفج
+                    
                     const srv = parsed.servers.find(s => (s.properties?.hostname || "").includes(config.server.apiName));
                     resolve(srv || null);
                 } catch (e) { resolve(null); }
@@ -35,7 +34,7 @@ function getFullServerData() {
 
 async function updateDashboard() {
     try {
-        // بيقرأ الأي بي والبورت من ملف الكونفج
+       
         const state = await GameDig.query({
             type: 'battlefield2', 
             host: config.server.ip, 
@@ -156,15 +155,15 @@ async function updateDashboard() {
             )
             .setThumbnail(`https://www.realitymod.com/images/maps/${mapClean}.jpg`)
             .setImage(mapLayerUrl)
-            // بيقرأ الفوتر من ملف الكونفج
+            
             .setFooter({ text: `${config.botSettings.footerText} • Updated: ${new Date().toLocaleTimeString('en-US')}` })
             .setTimestamp();
 
-        // بيقرأ أيدي الروم من ملف الكونفج
+        
         const channel = await client.channels.fetch(config.discord.channelId);
         if (!botMessage) {
             const msgs = await channel.messages.fetch({ limit: 10 });
-            // زودت حماية هنا عشان البوت ميعملش إيرور لو لقى رسالة سيستم
+            
             botMessage = msgs.find(m => m.author.id === client.user.id && !m.system && m.editable);
         }
 
@@ -180,9 +179,9 @@ client.once(Events.ClientReady, () => {
     console.log(`✅ Dashboard is up!`);
     updateDashboard();
 
-    // بيقرأ وقت التحديث من ملف الكونفج
+    
     setInterval(updateDashboard, config.botSettings.updateInterval);
 });
 
-// بيقرأ التوكن من ملف الكونفج
+
 client.login(config.discord.token);
