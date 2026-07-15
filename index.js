@@ -100,25 +100,31 @@ async function updateDashboard() {
         const validAdmins = (config.adminsList || []).filter(name => name.trim() !== "");
         const validFriends = (config.friendsList || []).filter(name => name.trim() !== "");
 
+        const formatTrackedGroup = (data, emptyLabel) => {
+            if (data.active.length === 0 && data.afk.length === 0) {
+                return `\`\`\`\n${emptyLabel}\n\`\`\``;
+            }
+            let out = "";
+            if (data.active.length > 0) {
+                out += `✅ **ACTIVE:**\n\`\`\`md\n${data.active.map(p => `• ${p}`).join("\n")}\`\`\`\n`;
+            }
+            if (data.afk.length > 0) {
+                out += `💤 **AFK / LOADING:**\n\`\`\`md\n${data.afk.map(p => `• ${p}`).join("\n")}\`\`\``;
+            }
+            return out;
+        };
+
         const extraFields = [];
 
         if (validAdmins.length > 0) {
             const adminsData = processList(validAdmins);
-            let adminsFormatted = `\`\`\`md\n`;
-            if (adminsData.active.length > 0) adminsFormatted += adminsData.active.map(a => `• ${a} (Active)`).join("\n") + "\n";
-            if (adminsData.afk.length > 0) adminsFormatted += adminsData.afk.map(a => `• ${a} (AFK/Loading)`).join("\n") + "\n";
-            if (adminsData.active.length === 0 && adminsData.afk.length === 0) adminsFormatted += `No admins online\n`;
-            adminsFormatted += `\`\`\``;
+            const adminsFormatted = formatTrackedGroup(adminsData, "No admins online");
             extraFields.push({ name: "🛡️ ADMINS STATUS", value: adminsFormatted, inline: false });
         }
 
         if (validFriends.length > 0) {
             const friendsData = processList(validFriends);
-            let friendsFormatted = `\`\`\`md\n`;
-            if (friendsData.active.length > 0) friendsFormatted += friendsData.active.map(f => `• ${f} (Active)`).join("\n") + "\n";
-            if (friendsData.afk.length > 0) friendsFormatted += friendsData.afk.map(f => `• ${f} (AFK/Loading)`).join("\n") + "\n";
-            if (friendsData.active.length === 0 && friendsData.afk.length === 0) friendsFormatted += `No friends online\n`;
-            friendsFormatted += `\`\`\``;
+            const friendsFormatted = formatTrackedGroup(friendsData, "No friends online");
             extraFields.push({ name: "⭐ FRIENDS STATUS IN SERVER", value: friendsFormatted, inline: false });
         }
 
