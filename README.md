@@ -70,7 +70,7 @@ Save the file, go to the "Manage" tab, and click "Start". The bot will launch an
 ---
 
 ## Related Projects
-- **[QuickDig UI](https://quick-dig-ui.vercel.app)**: a free, open-source, login-free web tool by the same author for verifying a server's IP, Query Port, and live player roster. It's a lightweight companion tool, not a replacement for [PRSPY](https://prspy.realitymod.org), which remains the official PR:BF2 server/player browser.
+- **[QuickDig UI](https://github.com/Suspect-404/QuickDig-UI)**: a free, open-source, login-free web tool by the same author for verifying a server's IP, Query Port, and live player roster. It's a lightweight companion tool, not a replacement for [PRSPY](https://prspy.realitymod.org), which remains the official PR:BF2 server/player browser.
 
 ---
 
