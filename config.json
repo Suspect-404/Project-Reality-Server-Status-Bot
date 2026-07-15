@@ -11,7 +11,7 @@
     "botSettings": {
         "updateInterval": 15000,
         "embedColor": "#FFB300",
-        "footerText": "Powered by Community/Name"
+        "footerText": "Powerd by Name/Community "
     },
     "adminsList": [],
     "friendsList": [
