@@ -97,27 +97,27 @@ async function updateDashboard() {
             return { active: Array.from(active), afk: Array.from(afk) };
         };
 
-        const adminsData = processList(config.adminsList || []);
-        const friendsData = processList(config.friendsList || []);
+        const validAdmins = (config.adminsList || []).filter(name => name.trim() !== "");
+        const validFriends = (config.friendsList || []).filter(name => name.trim() !== "");
 
         let trackerFormatted = "";
 
-        if (adminsData.active.length > 0 || adminsData.afk.length > 0) {
-            trackerFormatted += `🛡️ **ADMINS:**\n\`\`\`md\n`;
+        if (validAdmins.length > 0) {
+            const adminsData = processList(validAdmins);
+            trackerFormatted += `🛡️ **ADMINS STATUS:**\n\`\`\`md\n`;
             if (adminsData.active.length > 0) trackerFormatted += adminsData.active.map(a => `• ${a} (Active)`).join("\n") + "\n";
             if (adminsData.afk.length > 0) trackerFormatted += adminsData.afk.map(a => `• ${a} (AFK/Loading)`).join("\n") + "\n";
+            if (adminsData.active.length === 0 && adminsData.afk.length === 0) trackerFormatted += `No admins online\n`;
             trackerFormatted += `\`\`\`\n`;
         }
 
-        if (friendsData.active.length > 0 || friendsData.afk.length > 0) {
-            trackerFormatted += `⭐ **FRIENDS & VIPs:**\n\`\`\`md\n`;
+        if (validFriends.length > 0) {
+            const friendsData = processList(validFriends);
+            trackerFormatted += `⭐ **FRIENDS STATUS IN SERVER:**\n\`\`\`md\n`;
             if (friendsData.active.length > 0) trackerFormatted += friendsData.active.map(f => `• ${f} (Active)`).join("\n") + "\n";
             if (friendsData.afk.length > 0) trackerFormatted += friendsData.afk.map(f => `• ${f} (AFK/Loading)`).join("\n") + "\n";
+            if (friendsData.active.length === 0 && friendsData.afk.length === 0) trackerFormatted += `No friends online\n`;
             trackerFormatted += `\`\`\`\n`;
-        }
-
-        if (trackerFormatted === "") {
-            trackerFormatted = "```\nNo Admins or Friends online\n```";
         }
 
         let nextMap = "Unknown";
@@ -144,22 +144,27 @@ async function updateDashboard() {
 
         const uniquePlayersCount = new Set(queryPlayers.map(p => p.name || p.player || p.pname)).size;
 
+        const embedColor = config.botSettings.embedColor || '#c59434';
+
         const embed = new EmbedBuilder()
             .setTitle(`📊 ${state.name}`)
-            .setColor('#c59434')
+            .setColor(embedColor)
             .setDescription(`🟢 **SERVER STATUS: ONLINE** | ⏱️ **ELAPSED: ${timeDisplay}**\n## 👥 PLAYERS: \`${state.raw.numplayers || uniquePlayersCount} / ${state.maxplayers}\``)
             .addFields(
                 { name: "🗺️ CURRENT MAP", value: `**${state.map}**`, inline: true },
                 { name: "🎮 MODE", value: `**${modeDisplay}**`, inline: true },
                 { name: "💠 LAYER", value: `**${layerDisplay}**`, inline: true },
                 { name: "⚔️ FACTIONS", value: `**${factionsText}**`, inline: true },
-                { name: "⏭️ NEXT MAP", value: `**${nextMap}**`, inline: true },
-                { name: "🔍 TRACKED PLAYERS", value: trackerFormatted, inline: false }
+                { name: "⏭️ NEXT MAP", value: `**${nextMap}**`, inline: true }
             )
             .setThumbnail(`https://www.realitymod.com/images/maps/${mapClean}.jpg`)
             .setImage(mapLayerUrl)
-            .setFooter({ text: `${config.botSettings.footerText} • Updated: ${new Date().toLocaleTimeString('en-US')}` })
+            .setFooter({ text: `${config.botSettings.footerText} • Developed by Ezzeldin • Updated: ${new Date().toLocaleTimeString('en-US')}` })
             .setTimestamp();
+
+        if (trackerFormatted.trim() !== "") {
+            embed.addFields({ name: "🔍 TRACKED PLAYERS", value: trackerFormatted, inline: false });
+        }
 
         const channel = await client.channels.fetch(config.discord.channelId);
         if (!botMessage) {
@@ -180,9 +185,5 @@ client.once(Events.ClientReady, () => {
     updateDashboard();
     setInterval(updateDashboard, config.botSettings.updateInterval);
 });
-
-client.login(config.discord.token);
-});
-
 
 client.login(config.discord.token);
