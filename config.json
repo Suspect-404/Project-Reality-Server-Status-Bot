@@ -10,14 +10,12 @@
     },
     "botSettings": {
         "updateInterval": 15000,
-        "footerText": "Powered/Developed by Your Name/Community"
+        "embedColor": "#FFB300",
+        "footerText": "Powered by Community/Name"
     },
-    "adminsList": [
-        "Admin1",
-        "Admin2"
-    ],
+    "adminsList": [],
     "friendsList": [
-        "Player1",
-        "Player2"
+        "Ezzeldin",
+        "Player1"
     ]
 }
