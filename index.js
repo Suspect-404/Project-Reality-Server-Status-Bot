@@ -34,9 +34,9 @@ function getFullServerData() {
 async function updateDashboard() {
     try {
         const state = await GameDig.query({
-            type: 'battlefield2', 
-            host: config.server.ip, 
-            port: config.server.port, 
+            type: 'battlefield2',
+            host: config.server.ip,
+            port: config.server.port,
             maxRetries: 3,
         });
 
@@ -100,24 +100,26 @@ async function updateDashboard() {
         const validAdmins = (config.adminsList || []).filter(name => name.trim() !== "");
         const validFriends = (config.friendsList || []).filter(name => name.trim() !== "");
 
-        let trackerFormatted = "";
+        const extraFields = [];
 
         if (validAdmins.length > 0) {
             const adminsData = processList(validAdmins);
-            trackerFormatted += `🛡️ **ADMINS STATUS:**\n\`\`\`md\n`;
-            if (adminsData.active.length > 0) trackerFormatted += adminsData.active.map(a => `• ${a} (Active)`).join("\n") + "\n";
-            if (adminsData.afk.length > 0) trackerFormatted += adminsData.afk.map(a => `• ${a} (AFK/Loading)`).join("\n") + "\n";
-            if (adminsData.active.length === 0 && adminsData.afk.length === 0) trackerFormatted += `No admins online\n`;
-            trackerFormatted += `\`\`\`\n`;
+            let adminsFormatted = `\`\`\`md\n`;
+            if (adminsData.active.length > 0) adminsFormatted += adminsData.active.map(a => `• ${a} (Active)`).join("\n") + "\n";
+            if (adminsData.afk.length > 0) adminsFormatted += adminsData.afk.map(a => `• ${a} (AFK/Loading)`).join("\n") + "\n";
+            if (adminsData.active.length === 0 && adminsData.afk.length === 0) adminsFormatted += `No admins online\n`;
+            adminsFormatted += `\`\`\``;
+            extraFields.push({ name: "🛡️ ADMINS STATUS", value: adminsFormatted, inline: false });
         }
 
         if (validFriends.length > 0) {
             const friendsData = processList(validFriends);
-            trackerFormatted += `⭐ **FRIENDS STATUS IN SERVER:**\n\`\`\`md\n`;
-            if (friendsData.active.length > 0) trackerFormatted += friendsData.active.map(f => `• ${f} (Active)`).join("\n") + "\n";
-            if (friendsData.afk.length > 0) trackerFormatted += friendsData.afk.map(f => `• ${f} (AFK/Loading)`).join("\n") + "\n";
-            if (friendsData.active.length === 0 && friendsData.afk.length === 0) trackerFormatted += `No friends online\n`;
-            trackerFormatted += `\`\`\`\n`;
+            let friendsFormatted = `\`\`\`md\n`;
+            if (friendsData.active.length > 0) friendsFormatted += friendsData.active.map(f => `• ${f} (Active)`).join("\n") + "\n";
+            if (friendsData.afk.length > 0) friendsFormatted += friendsData.afk.map(f => `• ${f} (AFK/Loading)`).join("\n") + "\n";
+            if (friendsData.active.length === 0 && friendsData.afk.length === 0) friendsFormatted += `No friends online\n`;
+            friendsFormatted += `\`\`\``;
+            extraFields.push({ name: "⭐ FRIENDS STATUS IN SERVER", value: friendsFormatted, inline: false });
         }
 
         let nextMap = "Unknown";
@@ -146,6 +148,14 @@ async function updateDashboard() {
 
         const embedColor = config.botSettings.embedColor || '#c59434';
 
+        // الفوتر بيتبني بالكامل من config.json بس - مفيش أي اسم تابت (hardcoded) في الكود
+        const footerParts = [];
+        if (config.botSettings.footerText && config.botSettings.footerText.trim() !== "") {
+            footerParts.push(config.botSettings.footerText.trim());
+        }
+        footerParts.push(`Updated: ${new Date().toLocaleTimeString('en-US')}`);
+        const footerText = footerParts.join(" • ");
+
         const embed = new EmbedBuilder()
             .setTitle(`📊 ${state.name}`)
             .setColor(embedColor)
@@ -159,11 +169,11 @@ async function updateDashboard() {
             )
             .setThumbnail(`https://www.realitymod.com/images/maps/${mapClean}.jpg`)
             .setImage(mapLayerUrl)
-            .setFooter({ text: `${config.botSettings.footerText} • Developed by Ezzeldin • Updated: ${new Date().toLocaleTimeString('en-US')}` })
+            .setFooter({ text: footerText })
             .setTimestamp();
 
-        if (trackerFormatted.trim() !== "") {
-            embed.addFields({ name: "🔍 TRACKED PLAYERS", value: trackerFormatted, inline: false });
+        if (extraFields.length > 0) {
+            embed.addFields(...extraFields);
         }
 
         const channel = await client.channels.fetch(config.discord.channelId);
