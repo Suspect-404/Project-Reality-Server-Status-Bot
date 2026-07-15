@@ -119,7 +119,7 @@ async function updateDashboard() {
         if (validAdmins.length > 0) {
             const adminsData = processList(validAdmins);
             const adminsFormatted = formatTrackedGroup(adminsData, "No admins online");
-            extraFields.push({ name: "🛡️ ADMINS STATUS", value: adminsFormatted, inline: false });
+            extraFields.push({ name: "🛡️ ADMINS STATUS IN SERVER", value: adminsFormatted, inline: false });
         }
 
         if (validFriends.length > 0) {
