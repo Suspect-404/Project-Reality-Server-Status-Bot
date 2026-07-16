@@ -66,8 +66,8 @@ You can host this bot 100% free using Bot-Hosting.net:
 3. Under the **01 Identity** section, enter a name for your bot.
 4. Under the **02 Type** section, select **Application**.
 5. Under the **03 Type** section, select **Blank**.
-6. Under the **04 Type** section, select **Node.js** verstion 24.
-7. Set to **CPU** maximum.
+6. Under the **04 Type** section, select **Node.js** version 24.
+7. Set **CPU** to maximum.
 8. Then Click Lanuch deployment.
 9. Go to the "Files" tab, and upload your extracted `index.js`, `config.json`, `package.json`, and `package-lock.json` files.
 10. Dependencies (`discord.js`, `gamedig`) install automatically from `package.json` when the bot starts, no manual install command needed. If a dependency ever fails to load, check the "Packages" tab to confirm it's listed.
