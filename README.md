@@ -16,6 +16,18 @@ To ensure maximum accuracy and stability, this bot utilizes a dual-query system:
 - AFK/Loading Detection: The bot intelligently detects if a tracked player is active or stuck in loading/AFK by checking if their in-game score, kills, and deaths remain at zero.
 - Map Visuals: Automatically pulls the current map's layout from the official PR Map Gallery and displays it in the embed.
 - Next Map Detection: Extracts the upcoming map directly from the server's sponsor text.
+- Friend Join Alerts (Optional): Pings a role you choose, in a channel you choose, whenever a tracked Friend newly appears in the server.
+- No-Admins Alert (Optional): Pings a role you choose, in a channel you choose, when the player count passes a threshold you set while none of your tracked Admins are in the server.
+
+## Notifications (Optional)
+Beyond the main dashboard, the bot can post two kinds of standalone alert messages, each in a channel of your choice and optionally pinging a role:
+
+- **Friend Join Alerts:** Fires whenever one or more tracked Friends newly appear in the server, e.g. `Ezzeldin is online!` or `Ezzeldin, Komatsy, tarnished are online!`. The "already announced" list resets every new round, so everyone currently in the server gets announced again at the start of a fresh map.
+- **No-Admins Alert:** Fires once when the player count reaches a threshold you set while none of your tracked Admins are in the server, e.g. `60 players online and no admins online!`. If the situation is still unresolved after a set amount of time (30 minutes by default, adjustable), it repeats the reminder. It stops repeating as soon as an Admin joins or the player count drops back below the threshold, and can fire again later if the situation returns.
+
+Both are fully optional and independent of each other. Leave a notification's `channelId` empty in `config.json` to disable it completely. Leaving only `roleId` empty still sends the message, just without pinging anyone.
+
+> **Tip:** For the role ping to actually notify people (not just show as plain text), make sure the bot has permission to mention roles in that channel, or enable "Allow anyone to @mention this role" in the role's Discord settings.
 
 ## Setup Guide
 
@@ -64,6 +76,8 @@ Now open `config.json` directly inside the "Files" tab on Bot-Hosting.net and up
 * `server.ip` & `server.port`: Enter your server's IP (from Phase 3) and Port (default PR port is 29900).
 * `server.apiName`: Ensure this matches the server name exactly as it appears on PRSPY (from Phase 3).
 * `adminsList` / `friendsList`: Add the exact in-game names to track. If you do not want to use these features, leave the brackets empty: `[]`
+* `notifications.friends.channelId` / `notifications.friends.roleId`: Channel and role to ping for Friend Join Alerts (see [Notifications](#notifications-optional)). Optional, leave `channelId` empty to disable.
+* `notifications.admins.channelId` / `notifications.admins.roleId` / `notifications.admins.playerThreshold` / `notifications.admins.repeatMinutes`: Channel, role, player-count threshold, and repeat interval for the No-Admins Alert. Optional, leave `channelId` empty to disable.
 
 Save the file, go to the "Manage" tab, and click "Start". The bot will launch and start managing your live PR dashboard.
 
