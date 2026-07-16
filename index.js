@@ -13,6 +13,11 @@ let lastMapName = "";
 let cachedApiData = null;
 let lastApiFetchTime = 0;
 
+
+let previousOnlineFriends = new Set();
+let adminAlertActive = false;
+let lastAdminAlertTime = 0;
+
 function getFullServerData() {
     return new Promise((resolve) => {
         const url = `https://servers.realitymod.com/api/ServerInfo`;
@@ -51,6 +56,8 @@ async function updateDashboard() {
         if (state.map !== lastMapName) {
             mapStartTime = Date.now();
             lastMapName = state.map;
+            
+            previousOnlineFriends = new Set();
         }
 
         const startDelaySeconds = parseInt(state.raw?.bf2_startdelay) || 0;
@@ -66,8 +73,11 @@ async function updateDashboard() {
         if (state.raw && Array.isArray(state.raw.players)) queryPlayers.push(...state.raw.players);
 
         const processList = (list) => {
-            let active = new Set();
-            let afk = new Set();
+            let active = [];
+            let afk = [];
+            const seenActive = new Set();
+            const seenAfk = new Set();
+
             list.forEach(person => {
                 const fClean = person.toLowerCase().trim();
                 const pQuery = queryPlayers.find(p => (p.name || p.player || p.pname || "").toLowerCase().includes(fClean));
@@ -86,15 +96,17 @@ async function updateDashboard() {
                     else if (teamNum === 2) teamTag = `[${team2Name}]`;
                     else teamTag = `[Loading/Spec]`;
 
-                    const displayString = `${finalName} - ${teamTag}`;
+                   
+                    const entry = { name: finalName, display: `${finalName} - ${teamTag}` };
+
                     if (scoreAPI !== 0 || scoreQuery !== 0 || kills > 0 || deaths > 0) {
-                        active.add(displayString);
+                        if (!seenActive.has(finalName)) { seenActive.add(finalName); active.push(entry); }
                     } else {
-                        afk.add(displayString);
+                        if (!seenAfk.has(finalName)) { seenAfk.add(finalName); afk.push(entry); }
                     }
                 }
             });
-            return { active: Array.from(active), afk: Array.from(afk) };
+            return { active, afk };
         };
 
         const validAdmins = (config.adminsList || []).filter(name => name.trim() !== "");
@@ -106,24 +118,26 @@ async function updateDashboard() {
             }
             let out = "";
             if (data.active.length > 0) {
-                out += `✅ **ACTIVE:**\n\`\`\`md\n${data.active.map(p => `• ${p}`).join("\n")}\`\`\`\n`;
+                out += `✅ **ACTIVE:**\n\`\`\`md\n${data.active.map(p => `• ${p.display}`).join("\n")}\`\`\`\n`;
             }
             if (data.afk.length > 0) {
-                out += `💤 **AFK / LOADING:**\n\`\`\`md\n${data.afk.map(p => `• ${p}`).join("\n")}\`\`\``;
+                out += `💤 **AFK / LOADING:**\n\`\`\`md\n${data.afk.map(p => `• ${p.display}`).join("\n")}\`\`\``;
             }
             return out;
         };
 
         const extraFields = [];
 
+        let adminsData = null;
         if (validAdmins.length > 0) {
-            const adminsData = processList(validAdmins);
+            adminsData = processList(validAdmins);
             const adminsFormatted = formatTrackedGroup(adminsData, "No admins online");
             extraFields.push({ name: "🛡️ ADMINS STATUS IN SERVER", value: adminsFormatted, inline: false });
         }
 
+        let friendsData = null;
         if (validFriends.length > 0) {
-            const friendsData = processList(validFriends);
+            friendsData = processList(validFriends);
             const friendsFormatted = formatTrackedGroup(friendsData, "No friends online");
             extraFields.push({ name: "⭐ FRIENDS STATUS IN SERVER", value: friendsFormatted, inline: false });
         }
@@ -151,10 +165,11 @@ async function updateDashboard() {
         else if (mapSize === "128") layerDisplay = "Lrg";
 
         const uniquePlayersCount = new Set(queryPlayers.map(p => p.name || p.player || p.pname)).size;
+        const currentPlayerCount = parseInt(state.raw.numplayers) || uniquePlayersCount;
 
         const embedColor = config.botSettings.embedColor || '#c59434';
 
-        // الفوتر بيتبني بالكامل من config.json بس - مفيش أي اسم تابت (hardcoded) في الكود
+        
         const footerParts = [];
         if (config.botSettings.footerText && config.botSettings.footerText.trim() !== "") {
             footerParts.push(config.botSettings.footerText.trim());
@@ -190,6 +205,64 @@ async function updateDashboard() {
 
         if (botMessage) await botMessage.edit({ embeds: [embed] });
         else botMessage = await channel.send({ embeds: [embed] });
+
+        
+        const notifyCfg = config.notifications || {};
+
+        
+        const friendNotifyCfg = notifyCfg.friends || {};
+        if (friendsData && friendNotifyCfg.channelId && friendNotifyCfg.channelId.trim() !== "") {
+            const currentOnlineFriends = new Set([...friendsData.active, ...friendsData.afk].map(p => p.name));
+            const newlyOnline = [...currentOnlineFriends].filter(n => !previousOnlineFriends.has(n));
+
+            if (newlyOnline.length > 0) {
+                const message = newlyOnline.length === 1
+                    ? `${newlyOnline[0]} is online!`
+                    : `${newlyOnline.join(", ")} are online!`;
+                const mention = (friendNotifyCfg.roleId && friendNotifyCfg.roleId.trim() !== "")
+                    ? `<@&${friendNotifyCfg.roleId}> `
+                    : "";
+
+                try {
+                    const notifyChannel = await client.channels.fetch(friendNotifyCfg.channelId);
+                    await notifyChannel.send({ content: `${mention}🟢 **${message}**` });
+                } catch (e) {
+                    console.log("Friend notification error:", e.message);
+                }
+            }
+            previousOnlineFriends = currentOnlineFriends;
+        }
+
+        
+        const adminNotifyCfg = notifyCfg.admins || {};
+        if (validAdmins.length > 0 && adminNotifyCfg.channelId && adminNotifyCfg.channelId.trim() !== "") {
+            const threshold = parseInt(adminNotifyCfg.playerThreshold) || 60;
+            const repeatMinutes = parseInt(adminNotifyCfg.repeatMinutes) || 30;
+            const repeatIntervalMs = repeatMinutes * 60 * 1000;
+            const noAdminsOnline = adminsData && adminsData.active.length === 0 && adminsData.afk.length === 0;
+
+            if (currentPlayerCount >= threshold && noAdminsOnline) {
+                const nowTime = Date.now();
+               
+                const shouldSend = !adminAlertActive || (nowTime - lastAdminAlertTime >= repeatIntervalMs);
+
+                if (shouldSend) {
+                    adminAlertActive = true;
+                    lastAdminAlertTime = nowTime;
+                    const mention = (adminNotifyCfg.roleId && adminNotifyCfg.roleId.trim() !== "")
+                        ? `<@&${adminNotifyCfg.roleId}> `
+                        : "";
+                    try {
+                        const notifyChannel = await client.channels.fetch(adminNotifyCfg.channelId);
+                        await notifyChannel.send({ content: `${mention}⚠️ **${currentPlayerCount} players online and no admins online!**` });
+                    } catch (e) {
+                        console.log("Admin notification error:", e.message);
+                    }
+                }
+            } else {
+                adminAlertActive = false;
+            }
+        }
 
     } catch (err) {
         console.log("Error:", err.message);
