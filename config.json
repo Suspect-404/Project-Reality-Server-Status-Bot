@@ -11,11 +11,23 @@
     "botSettings": {
         "updateInterval": 15000,
         "embedColor": "#FFB300",
-        "footerText": "Powerd by Name/Community "
+        "footerText": "Powered by Name/Community"
     },
     "adminsList": [],
     "friendsList": [
         "Ezzeldin",
         "Player1"
-    ]
+    ],
+    "notifications": {
+        "friends": {
+            "channelId": "",
+            "roleId": ""
+        },
+        "admins": {
+            "channelId": "",
+            "roleId": "",
+            "playerThreshold": 60,
+            "repeatMinutes": 30
+        }
+    }
 }
