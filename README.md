@@ -91,3 +91,5 @@ Save the file, go to the "Manage" tab, and click "Start". The bot will launch an
 ## Screenshots
 ![Dashboard Screenshot](https://i.postimg.cc/hvcN5rzy/𝒑𝒓𝒂𝒓-𝒔𝒑𝒚-PRAR-Project-Reality-Arabic-Community-Discord-5-15-2026-4-59-40-PM.png)
 ![Dashboard Screenshot](https://i.postimg.cc/xdmrkByd/𝒑𝒓𝒂𝒓-𝒔𝒑𝒚-PRAR-Project-Reality-Arabic-Community-Discord-5-15-2026-5-05-27-PM.png)
+![Dashboard Screenshot](https://i.postimg.cc/KjNPm8xR/admins-s-server-Discord-7-16-2026-6-35-01-AM.png)
+![Dashboard Screenshot](https://i.postimg.cc/QdVQrDPh/admins-s-server-Discord-7-16-2026-6-35-12-AM.png)
