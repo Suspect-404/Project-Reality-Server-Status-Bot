@@ -62,11 +62,14 @@ Before starting, you need to download the bot files to your computer:
 ### Phase 4: Free Hosting on Bot-Hosting.net
 You can host this bot 100% free using Bot-Hosting.net:
 1. Create an account on https://bot-hosting.net.
-2. Go to the "Credits" section on the left sidebar to claim your free daily coins.
-3. Click "+ New" and select the **Starter** plan.
-4. Choose NodeJS as your server environment and create the project.
-5. Open your new project, go to the "Files" tab, and upload your extracted `index.js`, `config.json`, `package.json`, and `package-lock.json` files.
-6. Dependencies (`discord.js`, `gamedig`) install automatically from `package.json` when the bot starts, no manual install command needed. If a dependency ever fails to load, check the "Packages" tab to confirm it's listed.
+2. On the main dashboard, click the **"+ New"** button at the top right (or select **"New deployment"**).
+3. Under the **01 Identity** section, enter a name for your bot.
+4. Under the **02 Type** section, select **Application**.
+5. Under the **03 Type** section, select **Blank**.
+6. Under the **04 Type** section, select **Node.js** verstion 24.
+7. Set **CPU** maximum.
+8. Open your new project, go to the "Files" tab, and upload your extracted `index.js`, `config.json`, `package.json`, and `package-lock.json` files.
+9. Dependencies (`discord.js`, `gamedig`) install automatically from `package.json` when the bot starts, no manual install command needed. If a dependency ever fails to load, check the "Packages" tab to confirm it's listed.
 
 ### Phase 5: Configuration & Startup
 Now open `config.json` directly inside the "Files" tab on Bot-Hosting.net and update your details:
